@@ -138,9 +138,9 @@ with st.sidebar:
 
     # Default ARR per FTE scenarios
     default_scenarios = {
-        "bear": 100000,   # $100K per FTE in bear case
+        "bear": 90000,   # $100K per FTE in bear case
         "base": 150000,   # $150K per FTE in base case
-        "bull": 200000    # $200K per FTE in bull case
+        "bull": 250000    # $200K per FTE in bull case
     }
 
     # Create scenario sliders
