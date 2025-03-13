@@ -12,139 +12,153 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Check if dark mode is enabled
-is_dark_mode = st.get_option("theme.base") == "dark"
+# Force explicit color scheme that works in both modes
+primary_color = "#4F46E5"  # Bright indigo that works in both modes
+card_background = "#FFFFFF"  # White background for cards
+dark_card_background = "#262730"  # Dark background for cards in dark mode
+text_color_light = "#F9FAFB"  # Light text for dark backgrounds
+text_color_dark = "#111827"  # Dark text for light backgrounds
+border_color = "#E5E7EB"  # Light border
+dark_border_color = "#4B5563"  # Dark border
 
-# Define theme-dependent colors
-if is_dark_mode:
-    primary_color = "#7C83FD"  # Lighter indigo for dark mode
-    background_color = "#2E303E"  # Dark gray for backgrounds
-    card_background = "#3A3B47"  # Slightly lighter than background for cards
-    text_color = "#E0E0E0"  # Light gray text
-    border_color = "#4A4B57"  # Medium gray for borders
-    chart_color_scheme = "dark"
-else:
-    primary_color = "#1E3A8A"  # Original indigo color
-    background_color = "#F3F4F6"  # Light gray for backgrounds
-    card_background = "#FFFFFF"  # White for cards
-    text_color = "#111827"  # Dark text
-    border_color = "#E5E7EB"  # Light gray for borders
-    chart_color_scheme = "light"
+# Company colors that are visible in both themes
+collibra_color = "#818CF8"  # Bright indigo
+alation_color = "#38BDF8"  # Bright sky blue
 
-# Custom CSS with theme-responsive styling
-st.markdown(f"""
+# Scenario colors that work in both themes
+bear_color = "#F87171"  # Bright red
+base_color = "#4ADE80"  # Bright green
+bull_color = "#60A5FA"  # Bright blue
+
+# Custom CSS with explicit backgrounds for both themes
+st.markdown("""
 <style>
-    .main-header {{
+    /* Light mode (default) */
+    .main-header {
         font-size: 2.5rem;
-        color: {primary_color};
+        color: #4F46E5;
         margin-bottom: 1.5rem;
         text-align: center;
         padding: 1rem 0;
-        border-bottom: 2px solid {border_color};
-    }}
-    .section-header {{
-        color: {primary_color};
+        border-bottom: 2px solid #E5E7EB;
+    }
+    .section-header {
+        color: #4F46E5;
         padding-top: 1rem;
         padding-bottom: 0.5rem;
-        border-bottom: 1px solid {border_color};
+        border-bottom: 1px solid #E5E7EB;
         margin-bottom: 1rem;
-    }}
-    .company-card {{
-        background-color: {background_color};
+    }
+    .company-card {
+        background-color: #FFFFFF;
         padding: 1.5rem;
         border-radius: 0.5rem;
         margin-bottom: 1rem;
         box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    }}
-    .metrics-container {{
-        display: flex;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        margin-bottom: 1rem;
-    }}
-    .metric-card {{
-        background-color: {card_background};
-        padding: 1rem;
-        border-radius: 0.5rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-        text-align: center;
-    }}
-    .chart-container {{
-        background-color: {card_background};
+    }
+    .chart-container {
+        background-color: #FFFFFF;
         padding: 1rem;
         border-radius: 0.5rem;
         margin-bottom: 1.5rem;
         box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    }}
-    .footer {{
+    }
+    .metrics-container {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+    .metric-card {
+        background-color: #FFFFFF;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+        text-align: center;
+    }
+    .footer {
         text-align: center;
         padding: 1.5rem 0;
-        border-top: 1px solid {border_color};
+        border-top: 1px solid #E5E7EB;
         margin-top: 2rem;
-        color: {text_color};
         font-size: 0.875rem;
-    }}
-    .stTabs [data-baseweb="tab-list"] {{
-        gap: 2rem;
-    }}
-    .stTabs [data-baseweb="tab"] {{
-        height: 3rem;
-        white-space: pre-wrap;
-        background-color: {background_color};
-        border-radius: 0.5rem 0.5rem 0 0;
-        padding: 0 1rem;
-        font-weight: 500;
-    }}
-    div[data-testid="stSidebarContent"] {{
-        background-color: {background_color};
-        padding: 1rem;
-    }}
-    div[data-testid="stSidebarContent"] > div {{
-        background-color: {card_background};
-        padding: 1rem;
-        border-radius: 0.5rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    }}
-    div[data-testid="stSidebarUserContent"] {{
-        padding-bottom: 2rem;
-    }}
-    div[data-testid="metric-container"] {{
-        background-color: {background_color};
-        padding: 1rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    }}
-    .scenario-label {{
+    }
+    .scenario-label {
         font-weight: bold;
         margin-bottom: 0.25rem;
-        color: {text_color};
-    }}
-    /* Make dataframes prettier */
-    .dataframe-container {{
+    }
+    .dataframe-container {
         border-radius: 0.5rem;
         overflow: hidden;
         margin-bottom: 1rem;
-    }}
-    .dataframe {{
+    }
+    .info-box {
+        background-color: #EFF6FF;
+        padding: 1rem;
         border-radius: 0.5rem;
-        overflow: hidden;
-    }}
-    /* Dark mode specific adjustments for contrast */
-    {'a, p, h1, h2, h3, h4, h5, h6, li, span, div { color: ' + text_color + '; }' if is_dark_mode else ''}
+        margin-bottom: 2rem;
+        border-left: 4px solid #4F46E5;
+    }
+    
+    /* Dark mode overrides */
+    [data-testid="stApp"][data-theme="dark"] .main-header {
+        border-bottom-color: #4B5563;
+    }
+    [data-testid="stApp"][data-theme="dark"] .section-header {
+        border-bottom-color: #4B5563;
+    }
+    [data-testid="stApp"][data-theme="dark"] .company-card {
+        background-color: #262730;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.24), 0 1px 2px rgba(0,0,0,0.36);
+    }
+    [data-testid="stApp"][data-theme="dark"] .chart-container {
+        background-color: #262730;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.24), 0 1px 2px rgba(0,0,0,0.36);
+    }
+    [data-testid="stApp"][data-theme="dark"] .metric-card {
+        background-color: #262730;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.24), 0 1px 2px rgba(0,0,0,0.36);
+    }
+    [data-testid="stApp"][data-theme="dark"] .footer {
+        border-top-color: #4B5563;
+    }
+    [data-testid="stApp"][data-theme="dark"] .info-box {
+        background-color: #1E293B;
+        border-left-color: #818CF8;
+    }
+    
+    /* Ensure text is visible in both modes */
+    [data-testid="stApp"][data-theme="dark"] .company-card h3,
+    [data-testid="stApp"][data-theme="dark"] .company-card p,
+    [data-testid="stApp"][data-theme="dark"] .company-card div,
+    [data-testid="stApp"][data-theme="dark"] .chart-container h3,
+    [data-testid="stApp"][data-theme="dark"] .chart-container p,
+    [data-testid="stApp"][data-theme="dark"] .info-box p {
+        color: #F9FAFB !important;
+    }
+    
+    /* Make metric cards more visible in dark mode */
+    [data-testid="stApp"][data-theme="dark"] div[data-testid="metric-container"] {
+        background-color: #262730;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.24), 0 1px 2px rgba(0,0,0,0.36);
+    }
+    
+    /* Handle dataframe styling */
+    [data-testid="stApp"][data-theme="dark"] .dataframe {
+        color: #F9FAFB;
+    }
 </style>
 """, unsafe_allow_html=True)
 
 # App header
 st.markdown('<h1 class="main-header">Data Analytics Company ARR Estimator</h1>', unsafe_allow_html=True)
 
-# App description - theme-responsive background
-info_bg_color = "#EFF6FF" if not is_dark_mode else "#1E293B"
-info_border = "#1E3A8A" if not is_dark_mode else "#7C83FD"
-
-st.markdown(f"""
-<div style="background-color: {info_bg_color}; padding: 1rem; border-radius: 0.5rem; margin-bottom: 2rem; border-left: 4px solid {info_border};">
+# App description with theme-compatible styling
+st.markdown("""
+<div class="info-box">
     <p style="margin: 0;">This interactive dashboard estimates the Annual Recurring Revenue (ARR) for <b>Collibra</b> and <b>Alation</b>
     based on their number of Full-Time Equivalent (FTE) employees and configurable revenue per employee ratios.
     Use the controls in the sidebar to adjust scenarios and view the impact on estimated ARR.</p>
@@ -155,51 +169,41 @@ st.markdown(f"""
 with st.sidebar:
     st.markdown(f'<h2 style="color: {primary_color}; text-align: center; padding-bottom: 0.5rem;">Control Panel</h2>', unsafe_allow_html=True)
 
-    # Company data - adjusted colors for dark mode compatibility
+    # Company data with bright colors that work in both themes
     companies = {
-        "Collibra": {"fte": 974, "color": "#6366F1" if not is_dark_mode else "#8687FF"},  # Adjusted indigo
-        "Alation": {"fte": 612, "color": "#0EA5E9" if not is_dark_mode else "#38BDF8"}    # Adjusted sky blue
+        "Collibra": {"fte": 974, "color": collibra_color},
+        "Alation": {"fte": 612, "color": alation_color}
     }
 
     # Default ARR per FTE scenarios
     default_scenarios = {
-        "bear": 90000,   # $100K per FTE in bear case
+        "bear": 100000,   # $100K per FTE in bear case
         "base": 150000,   # $150K per FTE in base case
-        "bull": 250000    # $200K per FTE in bull case
+        "bull": 200000    # $200K per FTE in bull case
     }
 
-    # Create scenario sliders
+    # Create scenario sliders with bright, visible colors
     st.markdown(f'<h3 style="color: {primary_color}; font-size: 1.2rem; margin-bottom: 1rem;">ARR per FTE Scenarios</h3>', unsafe_allow_html=True)
     
-    # Theme-adjusted scenario colors
-    if is_dark_mode:
-        bear_color = "#F87171"  # Red - already visible in dark mode
-        base_color = "#4ADE80"  # Brighter green for dark mode
-        bull_color = "#60A5FA"  # Blue - already visible in dark mode
-    else:
-        bear_color = "#F87171"  # Original red
-        base_color = "#34D399"  # Original green
-        bull_color = "#60A5FA"  # Original blue
-
-    st.markdown('<p class="scenario-label">Bear Case (Conservative)</p>', unsafe_allow_html=True)
+    st.markdown('<p class="scenario-label" style="color: #F87171;">Bear Case (Conservative)</p>', unsafe_allow_html=True)
     bear_case = st.slider("", 50000, 200000, default_scenarios["bear"], step=10000, format="$%d", key="bear_slider")
     
-    st.markdown('<p class="scenario-label">Base Case (Expected)</p>', unsafe_allow_html=True)
+    st.markdown('<p class="scenario-label" style="color: #4ADE80;">Base Case (Expected)</p>', unsafe_allow_html=True)
     base_case = st.slider("", 100000, 250000, default_scenarios["base"], step=10000, format="$%d", key="base_slider")
     
-    st.markdown('<p class="scenario-label">Bull Case (Optimistic)</p>', unsafe_allow_html=True)
+    st.markdown('<p class="scenario-label" style="color: #60A5FA;">Bull Case (Optimistic)</p>', unsafe_allow_html=True)
     bull_case = st.slider("", 150000, 300000, default_scenarios["bull"], step=10000, format="$%d", key="bull_slider")
     
     # Add some visual separation
     st.markdown("<hr>", unsafe_allow_html=True)
     
     # Custom ARR per FTE for individual company tuning
-    st.markdown('<h3 style="color: {primary_color}; font-size: 1.2rem; margin-bottom: 1rem;">Company-Specific Tuning</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 style="color: #4F46E5; font-size: 1.2rem; margin-bottom: 1rem;">Company-Specific Tuning</h3>', unsafe_allow_html=True)
     
-    st.markdown(f'<p class="scenario-label" style="color: {companies["Collibra"]["color"]}">Collibra Custom ARR per FTE</p>', unsafe_allow_html=True)
+    st.markdown(f'<p class="scenario-label" style="color: {collibra_color};">Collibra Custom ARR per FTE</p>', unsafe_allow_html=True)
     custom_collibra = st.slider("", 50000, 300000, base_case, step=10000, format="$%d", key="collibra_slider")
     
-    st.markdown(f'<p class="scenario-label" style="color: {companies["Alation"]["color"]}">Alation Custom ARR per FTE</p>', unsafe_allow_html=True)
+    st.markdown(f'<p class="scenario-label" style="color: {alation_color};">Alation Custom ARR per FTE</p>', unsafe_allow_html=True)
     custom_alation = st.slider("", 50000, 300000, base_case, step=10000, format="$%d", key="alation_slider")
 
 # Calculate ARR for each scenario
@@ -235,24 +239,24 @@ with tab_summary:
     
     with col1:
         # For dark mode, adjust text color for card values
-        card_text_color = text_color if is_dark_mode else "black"
-        card_value_bg = card_background if is_dark_mode else "white"
+        card_text_color = text_color_dark if st.get_option("theme.base") == "dark" else "black"
+        card_value_bg = card_background if st.get_option("theme.base") == "dark" else "white"
 
         st.markdown(f"""
-        <div class="company-card" style="border-left: 4px solid {companies['Collibra']['color']}">
-            <h3 style="color: {companies['Collibra']['color']}; margin-top: 0;">Collibra</h3>
+        <div class="company-card" style="border-left: 4px solid {collibra_color}">
+            <h3 style="color: {collibra_color}; margin-top: 0;">Collibra</h3>
             <p style="color: {card_text_color};"><b>FTE Count:</b> {companies['Collibra']['fte']:,}</p>
             <div style="display: flex; justify-content: space-between; margin-top: 1rem;">
                 <div style="text-align: center; padding: 0.5rem; background-color: {card_value_bg}; border-radius: 0.25rem; width: 30%;">
-                    <div style="color: {scenarios['Bear']['color']}; font-weight: bold;">Bear</div>
+                    <div style="color: {bear_color}; font-weight: bold;">Bear</div>
                     <div style="color: {card_text_color};">${results['Collibra']['Bear']/1000000:.1f}M</div>
                 </div>
                 <div style="text-align: center; padding: 0.5rem; background-color: {card_value_bg}; border-radius: 0.25rem; width: 30%;">
-                    <div style="color: {scenarios['Base']['color']}; font-weight: bold;">Base</div>
+                    <div style="color: {base_color}; font-weight: bold;">Base</div>
                     <div style="color: {card_text_color};">${results['Collibra']['Base']/1000000:.1f}M</div>
                 </div>
                 <div style="text-align: center; padding: 0.5rem; background-color: {card_value_bg}; border-radius: 0.25rem; width: 30%;">
-                    <div style="color: {scenarios['Bull']['color']}; font-weight: bold;">Bull</div>
+                    <div style="color: {bull_color}; font-weight: bold;">Bull</div>
                     <div style="color: {card_text_color};">${results['Collibra']['Bull']/1000000:.1f}M</div>
                 </div>
             </div>
@@ -261,20 +265,20 @@ with tab_summary:
     
     with col2:
         st.markdown(f"""
-        <div class="company-card" style="border-left: 4px solid {companies['Alation']['color']}">
-            <h3 style="color: {companies['Alation']['color']}; margin-top: 0;">Alation</h3>
+        <div class="company-card" style="border-left: 4px solid {alation_color}">
+            <h3 style="color: {alation_color}; margin-top: 0;">Alation</h3>
             <p style="color: {card_text_color};"><b>FTE Count:</b> {companies['Alation']['fte']:,}</p>
             <div style="display: flex; justify-content: space-between; margin-top: 1rem;">
                 <div style="text-align: center; padding: 0.5rem; background-color: {card_value_bg}; border-radius: 0.25rem; width: 30%;">
-                    <div style="color: {scenarios['Bear']['color']}; font-weight: bold;">Bear</div>
+                    <div style="color: {bear_color}; font-weight: bold;">Bear</div>
                     <div style="color: {card_text_color};">${results['Alation']['Bear']/1000000:.1f}M</div>
                 </div>
                 <div style="text-align: center; padding: 0.5rem; background-color: {card_value_bg}; border-radius: 0.25rem; width: 30%;">
-                    <div style="color: {scenarios['Base']['color']}; font-weight: bold;">Base</div>
+                    <div style="color: {base_color}; font-weight: bold;">Base</div>
                     <div style="color: {card_text_color};">${results['Alation']['Base']/1000000:.1f}M</div>
                 </div>
                 <div style="text-align: center; padding: 0.5rem; background-color: {card_value_bg}; border-radius: 0.25rem; width: 30%;">
-                    <div style="color: {scenarios['Bull']['color']}; font-weight: bold;">Bull</div>
+                    <div style="color: {bull_color}; font-weight: bold;">Bull</div>
                     <div style="color: {card_text_color};">${results['Alation']['Bull']/1000000:.1f}M</div>
                 </div>
             </div>
@@ -349,19 +353,20 @@ with tab_summary:
         y=alt.Y('ARR (Millions):Q', title='ARR ($ Millions)'),
         color=alt.Color('Scenario:N', scale=alt.Scale(
             domain=scenarios_list,
-            range=[scenarios['Bear']['color'], scenarios['Base']['color'], scenarios['Bull']['color'], '#9CA3AF']
+            range=[bear_color, base_color, bull_color, '#9CA3AF']
         )),
         column=alt.Column('Scenario:N'),
         tooltip=['Company', 'Scenario', 'ARR (Millions)']
     ).properties(width=120)
     
-    # Adjust Altair chart background for dark mode
-    if is_dark_mode:
-        chart = chart.configure_view(
-            strokeWidth=0,
-            # Optional: You can add background color if needed
-            # fill='#2E303E'  # Match your dark mode background
-        )
+    # Explicitly set a white background for charts to ensure visibility
+    chart = chart.configure_view(
+        strokeWidth=0,
+        fill='white'  # Set chart background to white for best visibility
+    ).configure_axis(
+        labelColor='#111827',  # Dark text for labels
+        titleColor='#111827'   # Dark text for titles
+    )
     
     st.altair_chart(chart, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -418,11 +423,11 @@ with tab_detailed:
         })
         
         bar_colors = [
-            scenarios['Bear']['color'],
-            scenarios['Base']['color'], 
-            scenarios['Bull']['color'],
-            companies['Collibra']['color'],
-            companies['Alation']['color']
+            bear_color,
+            base_color, 
+            bull_color,
+            collibra_color,
+            alation_color
         ]
         
         ratio_chart = alt.Chart(ratio_data).mark_bar().encode(
@@ -457,7 +462,7 @@ with tab_sensitivity:
     st.markdown('<h2 class="section-header">Sensitivity Analysis</h2>', unsafe_allow_html=True)
     
     st.markdown("""
-    <div style="background-color: #ECFDF5; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem; border-left: 4px solid #059669;">
+    <div class="info-box">
         <p style="margin: 0;">This analysis shows how ARR estimates change as ARR per FTE values vary. The vertical lines represent the Bear (red), Base (green), and Bull (blue) case scenarios.</p>
     </div>
     """, unsafe_allow_html=True)
@@ -495,7 +500,7 @@ with tab_sensitivity:
         y=alt.Y('ARR ($M):Q', title='ARR ($ Millions)'),
         color=alt.Color('Company:N', scale=alt.Scale(
             domain=['Collibra ARR ($M)', 'Alation ARR ($M)'],
-            range=[companies['Collibra']['color'], companies['Alation']['color']]
+            range=[collibra_color, alation_color]
         )),
         tooltip=['Company', 'ARR per FTE ($K)', 'ARR ($M)']
     ).properties(
@@ -504,28 +509,28 @@ with tab_sensitivity:
     
     # Add vertical lines for the scenario values
     bear_line = alt.Chart(pd.DataFrame({'x': [bear_case / 1000]})).mark_rule(
-        color=scenarios['Bear']['color'], strokeDash=[5, 5], strokeWidth=2
+        color=bear_color, strokeDash=[5, 5], strokeWidth=2
     ).encode(x='x:Q')
     
     base_line = alt.Chart(pd.DataFrame({'x': [base_case / 1000]})).mark_rule(
-        color=scenarios['Base']['color'], strokeDash=[5, 5], strokeWidth=2
+        color=base_color, strokeDash=[5, 5], strokeWidth=2
     ).encode(x='x:Q')
     
     bull_line = alt.Chart(pd.DataFrame({'x': [bull_case / 1000]})).mark_rule(
-        color=scenarios['Bull']['color'], strokeDash=[5, 5], strokeWidth=2
+        color=bull_color, strokeDash=[5, 5], strokeWidth=2
     ).encode(x='x:Q')
     
     # Add annotations for the scenario lines
     bear_text = alt.Chart(pd.DataFrame({'x': [bear_case / 1000], 'y': [sensitivity_df['Collibra ARR ($M)'].max() * 0.9]})).mark_text(
-        align='left', baseline='middle', dx=5, color=scenarios['Bear']['color'], fontWeight='bold'
+        align='left', baseline='middle', dx=5, color=bear_color, fontWeight='bold'
     ).encode(x='x:Q', y='y:Q', text=alt.value('Bear Case'))
     
     base_text = alt.Chart(pd.DataFrame({'x': [base_case / 1000], 'y': [sensitivity_df['Collibra ARR ($M)'].max() * 0.95]})).mark_text(
-        align='left', baseline='middle', dx=5, color=scenarios['Base']['color'], fontWeight='bold'
+        align='left', baseline='middle', dx=5, color=base_color, fontWeight='bold'
     ).encode(x='x:Q', y='y:Q', text=alt.value('Base Case'))
     
     bull_text = alt.Chart(pd.DataFrame({'x': [bull_case / 1000], 'y': [sensitivity_df['Collibra ARR ($M)'].max()]})).mark_text(
-        align='left', baseline='middle', dx=5, color=scenarios['Bull']['color'], fontWeight='bold'
+        align='left', baseline='middle', dx=5, color=bull_color, fontWeight='bold'
     ).encode(x='x:Q', y='y:Q', text=alt.value('Bull Case'))
     
     # Display the chart with scenario lines and annotations
