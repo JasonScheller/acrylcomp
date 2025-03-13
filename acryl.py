@@ -99,6 +99,7 @@ st.markdown("""
         border-radius: 0.5rem;
         margin-bottom: 2rem;
         border-left: 4px solid #4F46E5;
+        color: #111827;
     }
     
     /* Dark mode overrides */
@@ -123,12 +124,14 @@ st.markdown("""
     [data-testid="stApp"][data-theme="dark"] .footer {
         border-top-color: #4B5563;
     }
+    /* Ensure info-box is readable in dark mode */
     [data-testid="stApp"][data-theme="dark"] .info-box {
         background-color: #1E293B;
         border-left-color: #818CF8;
+        color: #F9FAFB !important;
     }
     
-    /* Ensure text is visible in both modes */
+    /* Ensure text in key containers is legible */
     [data-testid="stApp"][data-theme="dark"] .company-card h3,
     [data-testid="stApp"][data-theme="dark"] .company-card p,
     [data-testid="stApp"][data-theme="dark"] .company-card div,
@@ -159,9 +162,7 @@ st.markdown('<h1 class="main-header">Data Analytics Company ARR Estimator</h1>',
 # App description with theme-compatible styling
 st.markdown("""
 <div class="info-box">
-    <p style="margin: 0;">This interactive dashboard estimates the Annual Recurring Revenue (ARR) for <b>Collibra</b> and <b>Alation</b>
-    based on their number of Full-Time Equivalent (FTE) employees and configurable revenue per employee ratios.
-    Use the controls in the sidebar to adjust scenarios and view the impact on estimated ARR.</p>
+    <p style="margin: 0;">This interactive dashboard estimates the Annual Recurring Revenue (ARR) for <b>Collibra</b> and <b>Alation</b> based on their number of Full-Time Equivalent (FTE) employees and configurable revenue per employee ratios. Use the controls in the sidebar to adjust scenarios and view the impact on estimated ARR.</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -296,7 +297,6 @@ with tab_summary:
     # Summary metrics
     st.markdown('<h2 class="section-header">ARR Summary</h2>', unsafe_allow_html=True)
     
-    # Calculate the differences
     collibra_diff = (results["Collibra"]["Bull"] - results["Collibra"]["Bear"]) / 1000000
     alation_diff = (results["Alation"]["Bull"] - results["Alation"]["Bear"]) / 1000000
     
@@ -340,7 +340,6 @@ with tab_summary:
     
     st.markdown('<div class="chart-container">', unsafe_allow_html=True)
     
-    # Prepare data for Altair chart
     scenarios_list = ["Bear", "Base", "Bull", "Custom"]
     companies_list = list(companies.keys())
     
@@ -355,7 +354,6 @@ with tab_summary:
     
     chart_df = pd.DataFrame(chart_data)
     
-    # Create grouped bar chart
     chart = alt.Chart(chart_df).mark_bar().encode(
         x=alt.X('Company:N'),
         y=alt.Y('ARR (Millions):Q', title='ARR ($ Millions)'),
@@ -367,7 +365,6 @@ with tab_summary:
         tooltip=['Company', 'Scenario', 'ARR (Millions)']
     ).properties(width=120)
     
-    # Configure chart with theme-based colors
     chart = chart.configure_view(
         strokeWidth=0,
         fill=chart_bg
@@ -380,13 +377,11 @@ with tab_summary:
     st.markdown('</div>', unsafe_allow_html=True)
 
 with tab_detailed:
-    # Detailed data analysis
     st.markdown('<h2 class="section-header">Detailed ARR Estimates</h2>', unsafe_allow_html=True)
     
     col1, col2 = st.columns([2, 3])
     
     with col1:
-        # Company FTE Information
         st.markdown('<div class="chart-container">', unsafe_allow_html=True)
         st.subheader("Company Information")
         company_df = pd.DataFrame({
@@ -399,7 +394,6 @@ with tab_detailed:
         st.markdown('</div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
         
-        # Display ARR Estimates Table
         st.markdown('<div class="chart-container">', unsafe_allow_html=True)
         st.subheader("ARR Estimates ($ millions)")
         display_df = (df_results / 1000000).round(1)
@@ -412,7 +406,6 @@ with tab_detailed:
         st.markdown('</div>', unsafe_allow_html=True)
     
     with col2:
-        # ARR per FTE comparison
         st.markdown('<div class="chart-container">', unsafe_allow_html=True)
         st.subheader("ARR per FTE Comparison")
         
@@ -456,7 +449,6 @@ with tab_detailed:
         st.altair_chart(ratio_chart, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
         
-        # Key insights
         st.markdown('<div class="chart-container">', unsafe_allow_html=True)
         st.subheader("Key Insights")
         
@@ -471,7 +463,6 @@ with tab_detailed:
         st.markdown('</div>', unsafe_allow_html=True)
 
 with tab_sensitivity:
-    # Sensitivity analysis
     st.markdown('<h2 class="section-header">Sensitivity Analysis</h2>', unsafe_allow_html=True)
     
     st.markdown("""
@@ -482,7 +473,6 @@ with tab_sensitivity:
     
     st.markdown('<div class="chart-container">', unsafe_allow_html=True)
     
-    # Create a range of ARR per FTE values
     arr_per_fte_range = np.arange(50000, 300000, 10000)
     collibra_arr = [companies["Collibra"]["fte"] * arr for arr in arr_per_fte_range]
     alation_arr = [companies["Alation"]["fte"] * arr for arr in arr_per_fte_range]
@@ -515,7 +505,6 @@ with tab_sensitivity:
         height=500
     )
     
-    # Vertical scenario lines and annotations
     bear_line = alt.Chart(pd.DataFrame({'x': [bear_case / 1000]})).mark_rule(
         color=bear_color, strokeDash=[5, 5], strokeWidth=2
     ).encode(x='x:Q')
@@ -552,7 +541,6 @@ with tab_sensitivity:
     st.altair_chart(final_chart, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # Sensitivity table
     st.markdown('<div class="chart-container">', unsafe_allow_html=True)
     st.subheader("Sensitivity Table: ARR ($ millions) at Selected ARR per FTE Values")
     
