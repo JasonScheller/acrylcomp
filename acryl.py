@@ -177,22 +177,22 @@ with st.sidebar:
 
     # Default ARR per FTE scenarios
     default_scenarios = {
-        "bear": 100000,   # $100K per FTE in bear case
+        "bear": 90000,   # $90K per FTE in bear case
         "base": 150000,   # $150K per FTE in base case
-        "bull": 200000    # $200K per FTE in bull case
+        "bull": 250000    # $250K per FTE in bull case
     }
 
     # Create scenario sliders with bright, visible colors
     st.markdown(f'<h3 style="color: {primary_color}; font-size: 1.2rem; margin-bottom: 1rem;">ARR per FTE Scenarios</h3>', unsafe_allow_html=True)
     
     st.markdown('<p class="scenario-label" style="color: #F87171;">Bear Case (Conservative)</p>', unsafe_allow_html=True)
-    bear_case = st.slider("", 50000, 200000, default_scenarios["bear"], step=10000, format="$%d", key="bear_slider")
+    bear_case = st.slider("Bear Case ARR per FTE", 50000, 200000, default_scenarios["bear"], step=10000, format="$%d", key="bear_slider", label_visibility="collapsed")
     
     st.markdown('<p class="scenario-label" style="color: #4ADE80;">Base Case (Expected)</p>', unsafe_allow_html=True)
-    base_case = st.slider("", 100000, 250000, default_scenarios["base"], step=10000, format="$%d", key="base_slider")
+    base_case = st.slider("Base Case ARR per FTE", 100000, 250000, default_scenarios["base"], step=10000, format="$%d", key="base_slider", label_visibility="collapsed")
     
     st.markdown('<p class="scenario-label" style="color: #60A5FA;">Bull Case (Optimistic)</p>', unsafe_allow_html=True)
-    bull_case = st.slider("", 150000, 300000, default_scenarios["bull"], step=10000, format="$%d", key="bull_slider")
+    bull_case = st.slider("Bull Case ARR per FTE", 150000, 300000, default_scenarios["bull"], step=10000, format="$%d", key="bull_slider", label_visibility="collapsed")
     
     # Add some visual separation
     st.markdown("<hr>", unsafe_allow_html=True)
@@ -201,10 +201,10 @@ with st.sidebar:
     st.markdown('<h3 style="color: #4F46E5; font-size: 1.2rem; margin-bottom: 1rem;">Company-Specific Tuning</h3>', unsafe_allow_html=True)
     
     st.markdown(f'<p class="scenario-label" style="color: {collibra_color};">Collibra Custom ARR per FTE</p>', unsafe_allow_html=True)
-    custom_collibra = st.slider("", 50000, 300000, base_case, step=10000, format="$%d", key="collibra_slider")
+    custom_collibra = st.slider("Collibra Custom ARR per FTE", 50000, 300000, base_case, step=10000, format="$%d", key="collibra_slider", label_visibility="collapsed")
     
     st.markdown(f'<p class="scenario-label" style="color: {alation_color};">Alation Custom ARR per FTE</p>', unsafe_allow_html=True)
-    custom_alation = st.slider("", 50000, 300000, base_case, step=10000, format="$%d", key="alation_slider")
+    custom_alation = st.slider("Alation Custom ARR per FTE", 50000, 300000, base_case, step=10000, format="$%d", key="alation_slider", label_visibility="collapsed")
 
 # Calculate ARR for each scenario
 scenarios = {
