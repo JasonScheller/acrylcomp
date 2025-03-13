@@ -12,10 +12,10 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Force explicit color scheme that works in both modes
+# Define colors for both themes
 primary_color = "#4F46E5"  # Bright indigo that works in both modes
-card_background = "#FFFFFF"  # White background for cards
-dark_card_background = "#262730"  # Dark background for cards in dark mode
+card_background = "#FFFFFF"  # Light mode card background
+dark_card_background = "#262730"  # Dark mode card background
 text_color_light = "#F9FAFB"  # Light text for dark backgrounds
 text_color_dark = "#111827"  # Dark text for light backgrounds
 border_color = "#E5E7EB"  # Light border
@@ -228,6 +228,18 @@ for company, data in companies.items():
 # Convert results to DataFrame for easier visualization
 df_results = pd.DataFrame(results)
 
+# Determine current theme colors for in-code styling
+if st.get_option("theme.base") == "dark":
+    card_text_color = text_color_light
+    card_value_bg = dark_card_background
+    chart_bg = dark_card_background
+    axis_text_color = text_color_light
+else:
+    card_text_color = text_color_dark
+    card_value_bg = card_background
+    chart_bg = card_background
+    axis_text_color = text_color_dark
+
 # Create tabs for organization
 tab_summary, tab_detailed, tab_sensitivity = st.tabs(["📊 Summary Dashboard", "🔍 Detailed Analysis", "📈 Sensitivity Analysis"])
 
@@ -238,10 +250,6 @@ with tab_summary:
     col1, col2 = st.columns(2)
     
     with col1:
-        # For dark mode, adjust text color for card values
-        card_text_color = text_color_dark if st.get_option("theme.base") == "dark" else "black"
-        card_value_bg = card_background if st.get_option("theme.base") == "dark" else "white"
-
         st.markdown(f"""
         <div class="company-card" style="border-left: 4px solid {collibra_color}">
             <h3 style="color: {collibra_color}; margin-top: 0;">Collibra</h3>
@@ -332,7 +340,7 @@ with tab_summary:
     
     st.markdown('<div class="chart-container">', unsafe_allow_html=True)
     
-    # Prepare data for Altair chart in a more efficient way
+    # Prepare data for Altair chart
     scenarios_list = ["Bear", "Base", "Bull", "Custom"]
     companies_list = list(companies.keys())
     
@@ -359,13 +367,13 @@ with tab_summary:
         tooltip=['Company', 'Scenario', 'ARR (Millions)']
     ).properties(width=120)
     
-    # Explicitly set a white background for charts to ensure visibility
+    # Configure chart with theme-based colors
     chart = chart.configure_view(
         strokeWidth=0,
-        fill='white'  # Set chart background to white for best visibility
+        fill=chart_bg
     ).configure_axis(
-        labelColor='#111827',  # Dark text for labels
-        titleColor='#111827'   # Dark text for titles
+        labelColor=axis_text_color,
+        titleColor=axis_text_color
     )
     
     st.altair_chart(chart, use_container_width=True)
@@ -394,10 +402,7 @@ with tab_detailed:
         # Display ARR Estimates Table
         st.markdown('<div class="chart-container">', unsafe_allow_html=True)
         st.subheader("ARR Estimates ($ millions)")
-        # Convert to millions and round to 1 decimal place
-        display_df = df_results / 1000000
-        display_df = display_df.round(1)
-        # Transpose for better presentation
+        display_df = (df_results / 1000000).round(1)
         display_df_t = display_df.T
         display_df_t.index.name = "Company"
         display_df_t.reset_index(inplace=True)
@@ -440,6 +445,14 @@ with tab_detailed:
             tooltip=['Scenario', 'ARR per FTE ($K)']
         ).properties(height=300)
         
+        ratio_chart = ratio_chart.configure_view(
+            strokeWidth=0,
+            fill=chart_bg
+        ).configure_axis(
+            labelColor=axis_text_color,
+            titleColor=axis_text_color
+        )
+        
         st.altair_chart(ratio_chart, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
         
@@ -450,8 +463,8 @@ with tab_detailed:
         st.markdown(f"""
         <ul>
             <li><b>Employee Count Difference:</b> Collibra has {companies["Collibra"]["fte"] - companies["Alation"]["fte"]} more employees than Alation ({(companies["Collibra"]["fte"] / companies["Alation"]["fte"] - 1) * 100:.1f}% larger)</li>
-            <li><b>Collibra Range:</b> ${results["Collibra"]["Bear"]/1000000:.1f}M to ${results["Collibra"]["Bull"]/1000000:.1f}M (${collibra_diff:.1f}M difference)</li>
-            <li><b>Alation Range:</b> ${results["Alation"]["Bear"]/1000000:.1f}M to ${results["Alation"]["Bull"]/1000000:.1f}M (${alation_diff:.1f}M difference)</li>
+            <li><b>Collibra Range:</b> ${results["Collibra"]["Bear"]/1000000:.1f}M to ${results["Collibra"]["Bull"]/1000000:.1f}M ({collibra_diff:.1f}M difference)</li>
+            <li><b>Alation Range:</b> ${results["Alation"]["Bear"]/1000000:.1f}M to ${results["Alation"]["Bull"]/1000000:.1f}M ({alation_diff:.1f}M difference)</li>
             <li><b>Custom Scenarios:</b> With custom settings, Collibra ARR is ${results["Collibra"]["Custom"]/1000000:.1f}M and Alation ARR is ${results["Alation"]["Custom"]/1000000:.1f}M</li>
         </ul>
         """, unsafe_allow_html=True)
@@ -471,19 +484,15 @@ with tab_sensitivity:
     
     # Create a range of ARR per FTE values
     arr_per_fte_range = np.arange(50000, 300000, 10000)
-    
-    # Calculate ARR for each company across the range
     collibra_arr = [companies["Collibra"]["fte"] * arr for arr in arr_per_fte_range]
     alation_arr = [companies["Alation"]["fte"] * arr for arr in arr_per_fte_range]
     
-    # Create a dataframe for the line chart
     sensitivity_df = pd.DataFrame({
         'ARR per FTE ($K)': arr_per_fte_range / 1000,
         'Collibra ARR ($M)': [arr / 1000000 for arr in collibra_arr],
         'Alation ARR ($M)': [arr / 1000000 for arr in alation_arr]
     })
     
-    # Melt the dataframe for Altair
     sensitivity_melted = pd.melt(
         sensitivity_df, 
         id_vars=['ARR per FTE ($K)'], 
@@ -492,7 +501,6 @@ with tab_sensitivity:
         value_name='ARR ($M)'
     )
     
-    # Create the line chart
     line_chart = alt.Chart(sensitivity_melted).mark_line(
         strokeWidth=3
     ).encode(
@@ -507,7 +515,7 @@ with tab_sensitivity:
         height=500
     )
     
-    # Add vertical lines for the scenario values
+    # Vertical scenario lines and annotations
     bear_line = alt.Chart(pd.DataFrame({'x': [bear_case / 1000]})).mark_rule(
         color=bear_color, strokeDash=[5, 5], strokeWidth=2
     ).encode(x='x:Q')
@@ -520,7 +528,6 @@ with tab_sensitivity:
         color=bull_color, strokeDash=[5, 5], strokeWidth=2
     ).encode(x='x:Q')
     
-    # Add annotations for the scenario lines
     bear_text = alt.Chart(pd.DataFrame({'x': [bear_case / 1000], 'y': [sensitivity_df['Collibra ARR ($M)'].max() * 0.9]})).mark_text(
         align='left', baseline='middle', dx=5, color=bear_color, fontWeight='bold'
     ).encode(x='x:Q', y='y:Q', text=alt.value('Bear Case'))
@@ -533,8 +540,15 @@ with tab_sensitivity:
         align='left', baseline='middle', dx=5, color=bull_color, fontWeight='bold'
     ).encode(x='x:Q', y='y:Q', text=alt.value('Bull Case'))
     
-    # Display the chart with scenario lines and annotations
     final_chart = line_chart + bear_line + base_line + bull_line + bear_text + base_text + bull_text
+    final_chart = final_chart.configure_view(
+        strokeWidth=0,
+        fill=chart_bg
+    ).configure_axis(
+        labelColor=axis_text_color,
+        titleColor=axis_text_color
+    )
+    
     st.altair_chart(final_chart, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
     
@@ -542,12 +556,11 @@ with tab_sensitivity:
     st.markdown('<div class="chart-container">', unsafe_allow_html=True)
     st.subheader("Sensitivity Table: ARR ($ millions) at Selected ARR per FTE Values")
     
-    # Create a more detailed sensitivity table for key values
     key_values = [100, 125, 150, 175, 200, 225, 250]
     sens_table_data = []
     
     for val in key_values:
-        val_k = val * 1000  # Convert to actual value (e.g., 100K → 100,000)
+        val_k = val * 1000
         sens_table_data.append({
             "ARR per FTE": f"${val}K",
             "Collibra ARR": f"${companies['Collibra']['fte'] * val_k / 1000000:.1f}M",
@@ -566,13 +579,13 @@ st.markdown('<div class="footer">', unsafe_allow_html=True)
 st.markdown("""
 ### How to Use This Tool:
 
-1. Use the sliders in the sidebar to adjust the ARR per FTE values for different scenarios
-2. Fine-tune company-specific ARR per FTE values using the "Company-Specific Tuning" sliders
+1. Use the sliders in the sidebar to adjust the ARR per FTE values for different scenarios  
+2. Fine-tune company-specific ARR per FTE values using the "Company-Specific Tuning" sliders  
 3. Navigate between tabs to view different analyses:
-   - **Summary Dashboard:** Quick overview of ARR estimates
-   - **Detailed Analysis:** In-depth data tables and charts
+   - **Summary Dashboard:** Quick overview of ARR estimates  
+   - **Detailed Analysis:** In-depth data tables and charts  
    - **Sensitivity Analysis:** Examine how ARR changes with different ARR per FTE values
 
 *Note: All calculations are based on the provided FTE counts (Collibra: 974, Alation: 612) and the ARR per FTE ratios.*
 """)
-st.markdown('</div>', unsafe_allow_html=True) 
+st.markdown('</div>', unsafe_allow_html=True)
